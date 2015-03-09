@@ -33,7 +33,7 @@ namespace Microsoft.AspNet.Session
             }))
             {
                 var client = server.CreateClient();
-                var response = await client.GetAsync("/");
+                var response = await client.GetAsync(SessionDefaults.CookiePath);
                 response.EnsureSuccessStatusCode();
                 IEnumerable<string> values;
                 Assert.False(response.Headers.TryGetValues("Set-Cookie", out values));
@@ -57,7 +57,7 @@ namespace Microsoft.AspNet.Session
             }))
             {
                 var client = server.CreateClient();
-                var response = await client.GetAsync("/");
+                var response = await client.GetAsync(SessionDefaults.CookiePath);
                 response.EnsureSuccessStatusCode();
                 IEnumerable<string> values;
                 Assert.True(response.Headers.TryGetValues("Set-Cookie", out values));
@@ -94,9 +94,9 @@ namespace Microsoft.AspNet.Session
 
                 client = server.CreateClient();
                 client.DefaultRequestHeaders.Add("Cookie", response.Headers.GetValues("Set-Cookie"));
-                Assert.Equal("1", await client.GetStringAsync("/"));
-                Assert.Equal("2", await client.GetStringAsync("/"));
-                Assert.Equal("3", await client.GetStringAsync("/"));
+                Assert.Equal("1", await client.GetStringAsync(SessionDefaults.CookiePath));
+                Assert.Equal("2", await client.GetStringAsync(SessionDefaults.CookiePath));
+                Assert.Equal("3", await client.GetStringAsync(SessionDefaults.CookiePath));
             }
         }
 
@@ -207,7 +207,7 @@ namespace Microsoft.AspNet.Session
             }))
             {
                 var client = server.CreateClient();
-                var response = await client.GetAsync("/");
+                var response = await client.GetAsync(SessionDefaults.CookiePath);
                 response.EnsureSuccessStatusCode();
                 Assert.Single(sink.Writes);
                 Assert.True(((ILoggerStructure)sink.Writes[0].State).Format().Contains("started"));
