@@ -5,6 +5,7 @@ using System;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.Caching.Distributed;
 using Microsoft.Framework.Logging;
+using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Session
 {
