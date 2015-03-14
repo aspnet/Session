@@ -11,6 +11,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Interfaces;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Session
 {
