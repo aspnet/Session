@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.AspNet.Http.Interfaces;
+using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Session
 {
