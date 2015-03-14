@@ -10,6 +10,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Session
 {
