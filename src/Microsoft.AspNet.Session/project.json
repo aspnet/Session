@@ -6,7 +6,7 @@
         "Microsoft.AspNet.Http.Interfaces": "1.0.0-*",
         "Microsoft.Framework.Caching.Distributed": "1.0.0-*",
         "Microsoft.Framework.Logging.Interfaces": "1.0.0-*",
-        "Microsoft.Framework.NotNullAttribute.Internal": "1.0.0-*",
+        "Microsoft.Framework.NotNullAttribute.Internal": "1.0.0-*"
     },
     "compilationOptions": {
         "allowUnsafe": true
