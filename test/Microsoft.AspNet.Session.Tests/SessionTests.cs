@@ -268,5 +268,140 @@ namespace Microsoft.AspNet.Session
                 Assert.Equal(LogLevel.Warning, sink.Writes[1].LogLevel);
             }
         }
+
+        [Fact]
+        public async Task SettingSecureCookieOptionToNeverWillEnsureSecureFlagNotSet()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                app.UseInMemorySession(null, cookieoption => cookieoption.CookieSecure = CookieSecureOption.Never);
+                app.Run(context =>
+                {
+                    Assert.Null(context.Session.GetString("Key"));
+                    context.Session.SetString("Key", "Value");
+                    Assert.Equal("Value", context.Session.GetString("Key"));
+                    return Task.FromResult(0);
+                });
+            },
+            services => services.AddOptions()))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+                IEnumerable<string> values;
+                Assert.True(response.Headers.TryGetValues("Set-Cookie", out values));
+                Assert.Equal(1, values.Count());
+                Assert.True(!string.IsNullOrWhiteSpace(values.First()));
+                Assert.DoesNotContain("secure", values.First());
+            }
+        }
+
+        [Fact]
+        public async Task SettingSecureCookieOptionToAlwaysWillEnsureSecureFlagSet()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                app.UseInMemorySession(null, cookieoption => cookieoption.CookieSecure = CookieSecureOption.Always);
+                app.Run(context =>
+                {
+                    Assert.Null(context.Session.GetString("Key"));
+                    context.Session.SetString("Key", "Value");
+                    Assert.Equal("Value", context.Session.GetString("Key"));
+                    return Task.FromResult(0);
+                });
+            },
+            services => services.AddOptions()))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+                IEnumerable<string> values;
+                Assert.True(response.Headers.TryGetValues("Set-Cookie", out values));
+                Assert.Equal(1, values.Count());
+                Assert.True(!string.IsNullOrWhiteSpace(values.First()));
+                Assert.Contains("secure", values.First());
+            }
+        }
+
+        [Fact]
+        public async Task SettingSecureCookieOptionToSameAsRequestWillEnsureSecureFlagNotSetWhileNotUsingSSL()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                app.UseInMemorySession(null, cookieoption => cookieoption.CookieSecure = CookieSecureOption.SameAsRequest);
+                app.Run(context =>
+                {
+                    Assert.Null(context.Session.GetString("Key"));
+                    context.Session.SetString("Key", "Value");
+                    Assert.Equal("Value", context.Session.GetString("Key"));
+                    return Task.FromResult(0);
+                });
+            },
+            services => services.AddOptions()))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+                IEnumerable<string> values;
+                Assert.True(response.Headers.TryGetValues("Set-Cookie", out values));
+                Assert.Equal(1, values.Count());
+                Assert.True(!string.IsNullOrWhiteSpace(values.First()));
+                Assert.DoesNotContain("secure", values.First());
+            }
+        }
+
+        [Fact]
+        public async Task SettingHTTPOnlyCookieOptionToTrueWillEnsureHTTPOnlyFlagSet()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                app.UseInMemorySession(null, cookieoption => cookieoption.CookieHttpOnly = true);
+                app.Run(context =>
+                {
+                    Assert.Null(context.Session.GetString("Key"));
+                    context.Session.SetString("Key", "Value");
+                    Assert.Equal("Value", context.Session.GetString("Key"));
+                    return Task.FromResult(0);
+                });
+            },
+            services => services.AddOptions()))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+                IEnumerable<string> values;
+                Assert.True(response.Headers.TryGetValues("Set-Cookie", out values));
+                Assert.Equal(1, values.Count());
+                Assert.True(!string.IsNullOrWhiteSpace(values.First()));
+                Assert.Contains("httponly", values.First());
+            }
+        }
+
+        [Fact]
+        public async Task SettingHTTPOnlyCookieOptionToFalseWillEnsureHTTPOnlyFlagNotSet()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                app.UseInMemorySession(null, cookieoption => cookieoption.CookieHttpOnly = false);
+                app.Run(context =>
+                {
+                    Assert.Null(context.Session.GetString("Key"));
+                    context.Session.SetString("Key", "Value");
+                    Assert.Equal("Value", context.Session.GetString("Key"));
+                    return Task.FromResult(0);
+                });
+            },
+            services => services.AddOptions()))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+                IEnumerable<string> values;
+                Assert.True(response.Headers.TryGetValues("Set-Cookie", out values));
+                Assert.Equal(1, values.Count());
+                Assert.True(!string.IsNullOrWhiteSpace(values.First()));
+                Assert.DoesNotContain("httponly", values.First());
+            }
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace Microsoft.AspNet.Session
         public static string CookieName = ".AspNet.Session";
         public static string CookiePath = "/";
         public static CookieSecureOption CookieSecure = CookieSecureOption.SameAsRequest;
+        public static bool CookieHTTPOnly = true;
     }
 }

@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Session
         /// default is true, which means the cookie will only be passed to HTTP requests and is not made available
         /// to script on the page.
         /// </summary>
-        public bool CookieHttpOnly { get; set; } = true;
+        public bool CookieHttpOnly { get; set; } = SessionDefaults.CookieHTTPOnly;
 
         /// <summary>
         /// The IdleTimeout indicates how long the session can be idle before its contents are abandoned. Each session access
