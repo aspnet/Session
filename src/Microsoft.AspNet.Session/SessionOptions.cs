@@ -36,6 +36,13 @@ namespace Microsoft.AspNet.Session
         public TimeSpan IdleTimeout { get; set; } = TimeSpan.FromMinutes(20);
 
         /// <summary>
+        /// Determines if the cookie should only be transmitted on HTTPS request. The default is to limit the cookie
+        /// to HTTPS requests if the page which is doing the SignIn is also HTTPS. If you have an HTTPS sign in page
+        /// and portions of your site are HTTP you may need to change this value.
+        /// </summary>
+        public CookieSecureOption CookieSecure { get; set; } = SessionDefaults.CookieSecure;
+
+        /// <summary>
         /// Gets or sets the session storage manager. This overrides any session store passed into the middleware constructor.
         /// </summary>
         public ISessionStore Store { get; set; }
