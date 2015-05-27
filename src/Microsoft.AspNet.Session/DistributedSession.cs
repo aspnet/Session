@@ -56,17 +56,13 @@ namespace Microsoft.AspNet.Session
             return _store.TryGetValue(new EncodedKey(key), out value);
         }
 
-        public void Set(string key, ArraySegment<byte> value)
+        public void Set(string key, [NotNull] byte[] value)
         {
             var encodedKey = new EncodedKey(key);
             if (encodedKey.KeyBytes.Length > KeyLengthLimit)
             {
                 throw new ArgumentOutOfRangeException(nameof(key),
                     string.Format("The key cannot be longer than '{0}' when encoded with UTF-8.", KeyLengthLimit));
-            }
-            if (value.Array == null)
-            {
-                throw new ArgumentException("The ArraySegment<byte>.Array cannot be null.", nameof(value));
             }
 
             Load();
@@ -75,8 +71,8 @@ namespace Microsoft.AspNet.Session
                 throw new InvalidOperationException("The session cannot be established after the response has started.");
             }
             _isModified = true;
-            byte[] copy = new byte[value.Count];
-            Buffer.BlockCopy(value.Array, value.Offset, copy, 0, value.Count);
+            byte[] copy = new byte[value.Length];
+            Buffer.BlockCopy(src: value, srcOffset: 0, dst: copy, dstOffset: 0, count: value.Length);
             _store[encodedKey] = copy;
         }
 
