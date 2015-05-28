@@ -72,8 +72,7 @@ namespace Microsoft.AspNet.Session
             }
 
             var feature = new SessionFeature();
-            feature.Factory = new SessionFactory(sessionKey, _options.Store, _options.IdleTimeout, tryEstablishSession, isNewSessionKey);
-            feature.Session = feature.Factory.Create();
+            feature.Session = _options.Store.Create(sessionKey, _options.IdleTimeout, tryEstablishSession, isNewSessionKey);
             context.SetFeature<ISessionFeature>(feature);
 
             try
