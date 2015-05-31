@@ -131,6 +131,15 @@ namespace Microsoft.AspNet.Session
                     Path = _options.CookiePath ?? SessionDefaults.CookiePath,
                 };
 
+                if (_options.CookieSecure == CookieSecureOption.SameAsRequest)
+                {
+                    cookieOptions.Secure = _context.Request.IsHttps;
+                }
+                else
+                {
+                    cookieOptions.Secure = _options.CookieSecure == CookieSecureOption.Always;
+                }
+
                 _context.Response.Cookies.Append(_options.CookieName, _sessionKey, cookieOptions);
 
                 _context.Response.Headers.Set(
