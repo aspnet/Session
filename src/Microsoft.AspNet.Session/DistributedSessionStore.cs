@@ -10,7 +10,7 @@ using Microsoft.Framework.Logging;
 namespace Microsoft.AspNet.Session
 {
     /// <summary>
-    /// Represent a distributed cache session store.".
+    /// Represents a session state provider that using a distributed cache store.
     /// </summary>
     public class DistributedSessionStore : ISessionStore
     {

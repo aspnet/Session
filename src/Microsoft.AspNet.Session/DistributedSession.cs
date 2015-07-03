@@ -15,7 +15,7 @@ using Microsoft.Framework.Logging;
 namespace Microsoft.AspNet.Session
 {
     /// <summary>
-    /// Represent a distributed cache session.".
+    /// Represent a distributed cache session.
     /// </summary>
     public class DistributedSession : ISession
     {
@@ -36,11 +36,11 @@ namespace Microsoft.AspNet.Session
         /// Initializes a new instance of the <see cref="DistributedSession"/> class.
         /// </summary>
         /// <param name="cache">The <see cref="IDistributedCache"/>.</param>
-        /// <param name="sessionId">Represents the session id.</param>
-        /// <param name="idleTimeout">Represents the session timeout.</param>
-        /// <param name="tryEstablishSession">Represents the delegate that trying to establish the session.</param>
+        /// <param name="sessionId">Represents the unique identifier for the session.</param>
+        /// <param name="idleTimeout">Represents the amount of time, in minutes, allowed between requests before the session-state provider terminates the session.</param>
+        /// <param name="tryEstablishSession">Represents the delegate that try to establish the session.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
-        /// <param name="isNewSessionKey">Determine whether the session key is new.</param>
+        /// <param name="isNewSessionKey">Represents a value indicating whether the session was created with the current request.</param>
         public DistributedSession([NotNull] IDistributedCache cache, [NotNull] string sessionId, TimeSpan idleTimeout,
             [NotNull] Func<bool> tryEstablishSession, [NotNull] ILoggerFactory loggerFactory, bool isNewSessionKey)
         {
