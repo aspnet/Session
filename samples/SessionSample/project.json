@@ -4,17 +4,17 @@
         "install-sqlservercache": "Microsoft.Framework.Caching.SqlServer"
     },
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
-        "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
-        "Microsoft.AspNet.Session": "1.0.0-*",
-        "Microsoft.Framework.Caching.Memory": "1.0.0-*",
-        "Microsoft.Framework.Caching.Redis": "1.0.0-*",
-        "Microsoft.Framework.Caching.SqlServer": "1.0.0-*",
-        "Microsoft.Framework.Logging.Console": "1.0.0-*"
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta6",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta6",
+        "Microsoft.AspNet.Session": "1.0.0-beta6",
+        "Microsoft.Framework.Caching.Memory": "1.0.0-beta6",
+        "Microsoft.Framework.Caching.Redis": "1.0.0-beta6",
+        "Microsoft.Framework.Caching.SqlServer": "1.0.0-beta6",
+        "Microsoft.Framework.Logging.Console": "1.0.0-beta6"
     },
     "exclude": "wwwroot/**/*.*",
     "frameworks": {
-        "dnx451": { }
+        "dnx451": {}
     },
     "webroot": "wwwroot"
 }
