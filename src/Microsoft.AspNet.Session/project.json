@@ -1,25 +1,28 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta7",
     "description": "ASP.NET 5 session state middleware.",
     "repository": {
         "type": "git",
         "url": "git://github.com/aspnet/session"
     },
     "dependencies": {
-        "Microsoft.AspNet.Http.Abstractions": "1.0.0-*",
-        "Microsoft.Framework.Caching.Abstractions": "1.0.0-*",
-        "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
-        "Microsoft.Framework.NotNullAttribute.Sources": { "type": "build", "version": "1.0.0-*" },
-        "Microsoft.Framework.OptionsModel": "1.0.0-*"
+        "Microsoft.AspNet.Http.Abstractions": "1.0.0-beta7",
+        "Microsoft.Framework.Caching.Abstractions": "1.0.0-beta7",
+        "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta7",
+        "Microsoft.Framework.NotNullAttribute.Sources": {
+            "type": "build",
+            "version": "1.0.0-beta7"
+        },
+        "Microsoft.Framework.OptionsModel": "1.0.0-beta7"
     },
     "compilationOptions": {
         "allowUnsafe": true
     },
     "frameworks": {
-        "dnx451": { },
+        "dnx451": {},
         "dnxcore50": {
             "dependencies": {
-                "System.Security.Cryptography.Algorithms": "4.0.0-beta-*"
+                "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225"
             }
         }
     }
