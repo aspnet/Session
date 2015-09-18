@@ -14,6 +14,9 @@ using Microsoft.Framework.Logging;
 
 namespace Microsoft.AspNet.Session
 {
+    /// <summary>
+    /// Represent a distributed cache session.
+    /// </summary>
     public class DistributedSession : ISession
     {
         private const byte SerializationRevision = 1;
@@ -29,6 +32,15 @@ namespace Microsoft.AspNet.Session
         private bool _loaded;
         private bool _isNewSessionKey;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DistributedSession"/> class.
+        /// </summary>
+        /// <param name="cache">The <see cref="IDistributedCache"/>.</param>
+        /// <param name="sessionId">Represents the unique identifier for the session.</param>
+        /// <param name="idleTimeout">Represents the amount of time, in minutes, allowed between requests before the session-state provider terminates the session.</param>
+        /// <param name="tryEstablishSession">Represents the delegate that try to establish the session.</param>
+        /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
+        /// <param name="isNewSessionKey">Represents a value indicating whether the session was created with the current request.</param>
         public DistributedSession([NotNull] IDistributedCache cache, [NotNull] string sessionId, TimeSpan idleTimeout,
             [NotNull] Func<bool> tryEstablishSession, [NotNull] ILoggerFactory loggerFactory, bool isNewSessionKey)
         {
@@ -41,6 +53,7 @@ namespace Microsoft.AspNet.Session
             _isNewSessionKey = isNewSessionKey;
         }
 
+        /// <inheritdoc />
         public IEnumerable<string> Keys
         {
             get
@@ -50,12 +63,14 @@ namespace Microsoft.AspNet.Session
             }
         }
 
+        /// <inheritdoc />
         public bool TryGetValue(string key, out byte[] value)
         {
             Load(); // TODO: Silent failure
             return _store.TryGetValue(new EncodedKey(key), out value);
         }
 
+        /// <inheritdoc />
         public void Set(string key, [NotNull] byte[] value)
         {
             var encodedKey = new EncodedKey(key);
@@ -76,12 +91,14 @@ namespace Microsoft.AspNet.Session
             _store[encodedKey] = copy;
         }
 
+        /// <inheritdoc />
         public void Remove(string key)
         {
             Load();
             _isModified |= _store.Remove(new EncodedKey(key));
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
             Load();
@@ -99,6 +116,7 @@ namespace Microsoft.AspNet.Session
 
         // TODO: This should throw if called directly, but most other places it should fail silently
         // (e.g. TryGetValue should just return null).
+        /// <inheritdoc />
         public async Task LoadAsync()
         {
             if (!_loaded)
@@ -116,6 +134,7 @@ namespace Microsoft.AspNet.Session
             }
         }
 
+        /// <inheritdoc />
         public async Task CommitAsync()
         {
             if (_isModified)
