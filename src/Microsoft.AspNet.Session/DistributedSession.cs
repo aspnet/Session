@@ -62,7 +62,7 @@ namespace Microsoft.AspNet.Session
             if (encodedKey.KeyBytes.Length > KeyLengthLimit)
             {
                 throw new ArgumentOutOfRangeException(nameof(key),
-                    string.Format(Resources.Exception_KeyLengthIsExceeded, KeyLengthLimit));
+                    Resources.FormatException_KeyLengthIsExceeded(KeyLengthLimit));
             }
 
             Load();
