@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services));
             }
-            
+
             services.AddTransient<ISessionStore, DistributedSessionStore>();
             return services;
         }
@@ -39,6 +39,11 @@ namespace Microsoft.Extensions.DependencyInjection
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
+            }
+
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
             }
 
             services.Configure(configure);
