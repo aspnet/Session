@@ -4,6 +4,8 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Session;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddTransient<ISessionStore, DistributedSessionStore>();
+            services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
         }
 
         /// <summary>
