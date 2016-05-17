@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc2-final",
   "description": "ASP.NET Core session state middleware.",
   "packOptions": {
     "repository": {
@@ -13,10 +13,10 @@
     ]
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Options": "1.0.0-*"
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Options": "1.0.0-rc2-final"
   },
   "buildOptions": {
     "allowUnsafe": true,
@@ -31,7 +31,7 @@
     "net451": {},
     "netstandard1.3": {
       "dependencies": {
-        "System.Security.Cryptography.Algorithms": "4.1.0-*"
+        "System.Security.Cryptography.Algorithms": "4.1.0-rc2-24027"
       }
     }
   }
