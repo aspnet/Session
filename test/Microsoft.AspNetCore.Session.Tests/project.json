@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "dotnet-test-xunit": "1.0.0-*",
-    "Microsoft.AspNetCore.Session": "1.0.0-*",
-    "Microsoft.AspNetCore.TestHost": "1.0.0-*",
-    "Microsoft.Extensions.Caching.Memory": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Testing": "1.0.0-*",
+    "dotnet-test-xunit": "1.0.0-rc3-000000-00",
+    "Microsoft.AspNetCore.Session": "1.0.0",
+    "Microsoft.AspNetCore.TestHost": "1.0.0",
+    "Microsoft.Extensions.Caching.Memory": "1.0.0",
+    "Microsoft.Extensions.Logging.Testing": "1.0.0-rtm-21431",
     "xunit": "2.1.0"
   },
   "testRunner": "xunit",
@@ -12,11 +12,11 @@
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.0-*",
+          "version": "1.0.0",
           "type": "platform"
         },
-        "System.Threading.Thread": "4.0.0-*",
-        "System.Diagnostics.Process": "4.1.0-*"
+        "System.Threading.Thread": "4.0.0",
+        "System.Diagnostics.Process": "4.1.0"
       },
       "imports": [
         "dnxcore50",
