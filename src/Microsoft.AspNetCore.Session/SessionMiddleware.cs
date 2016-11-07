@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,7 +17,6 @@ namespace Microsoft.AspNetCore.Session
     /// </summary>
     public class SessionMiddleware
     {
-        private static readonly RandomNumberGenerator CryptoRandom = RandomNumberGenerator.Create();
         private const int SessionKeyLength = 36; // "382c74c3-721d-4f34-80e5-57657b6cbc27"
         private static readonly Func<bool> ReturnTrue = () => true;
         private readonly RequestDelegate _next;
@@ -26,6 +24,7 @@ namespace Microsoft.AspNetCore.Session
         private readonly ILogger _logger;
         private readonly ISessionStore _sessionStore;
         private readonly IDataProtector _dataProtector;
+        private readonly ISessionKeyGenerator _sessionKeyGenerator;
 
         /// <summary>
         /// Creates a new <see cref="SessionMiddleware"/>.
@@ -35,12 +34,14 @@ namespace Microsoft.AspNetCore.Session
         /// <param name="dataProtectionProvider">The <see cref="IDataProtectionProvider"/> used to protect and verify the cookie.</param>
         /// <param name="sessionStore">The <see cref="ISessionStore"/> representing the session store.</param>
         /// <param name="options">The session configuration options.</param>
+        /// <param name="sessionKeyGenerator">The <see cref="ISessionKeyGenerator"/> representing the session key generator</param>
         public SessionMiddleware(
             RequestDelegate next,
             ILoggerFactory loggerFactory,
             IDataProtectionProvider dataProtectionProvider,
             ISessionStore sessionStore,
-            IOptions<SessionOptions> options)
+            IOptions<SessionOptions> options,
+            ISessionKeyGenerator sessionKeyGenerator)
         {
             if (next == null)
             {
@@ -67,11 +68,17 @@ namespace Microsoft.AspNetCore.Session
                 throw new ArgumentNullException(nameof(options));
             }
 
+            if (sessionKeyGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(sessionKeyGenerator));
+            }
+
             _next = next;
             _logger = loggerFactory.CreateLogger<SessionMiddleware>();
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(SessionMiddleware));
             _options = options.Value;
             _sessionStore = sessionStore;
+            _sessionKeyGenerator = sessionKeyGenerator;
         }
 
         /// <summary>
@@ -88,9 +95,9 @@ namespace Microsoft.AspNetCore.Session
             if (string.IsNullOrWhiteSpace(sessionKey) || sessionKey.Length != SessionKeyLength)
             {
                 // No valid cookie, new session.
-                var guidBytes = new byte[16];
-                CryptoRandom.GetBytes(guidBytes);
-                sessionKey = new Guid(guidBytes).ToString();
+                sessionKey = _sessionKeyGenerator.GetNewSessionKey(SessionKeyLength);
+                if(sessionKey.Length != SessionKeyLength)
+                    throw new FormatException($"Provided session key length ({sessionKey.Length}) does not match required length: {SessionKeyLength}");
                 cookieValue = CookieProtection.Protect(_dataProtector, sessionKey);
                 var establisher = new SessionEstablisher(context, cookieValue, _options);
                 tryEstablishSession = establisher.TryEstablishSession;

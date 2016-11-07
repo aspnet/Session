@@ -25,6 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddTransient<ISessionStore, DistributedSessionStore>();
+            services.AddSingleton<ISessionKeyGenerator, SessionKeyGenerator>();
             services.AddDataProtection();
             return services;
         }
