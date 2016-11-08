@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Session
     /// </summary>
     public class SessionMiddleware
     {
-        private const int SessionKeyLength = 36; // "382c74c3-721d-4f34-80e5-57657b6cbc27"
+        private int SessionKeyLength => _sessionKeyGenerator.SessionKeyLength;
         private static readonly Func<bool> ReturnTrue = () => true;
         private readonly RequestDelegate _next;
         private readonly SessionOptions _options;
@@ -95,7 +95,7 @@ namespace Microsoft.AspNetCore.Session
             if (string.IsNullOrWhiteSpace(sessionKey) || sessionKey.Length != SessionKeyLength)
             {
                 // No valid cookie, new session.
-                sessionKey = _sessionKeyGenerator.GetNewSessionKey(SessionKeyLength);
+                sessionKey = _sessionKeyGenerator.GetNewSessionKey();
                 if(sessionKey.Length != SessionKeyLength)
                     throw new FormatException($"Provided session key length ({sessionKey.Length}) does not match required length: {SessionKeyLength}");
                 cookieValue = CookieProtection.Protect(_dataProtector, sessionKey);

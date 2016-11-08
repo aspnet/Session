@@ -5,6 +5,7 @@ namespace Microsoft.AspNetCore.Session
 {
     public interface ISessionKeyGenerator
     {
-        string GetNewSessionKey(int sessionKeyLength);
+        string GetNewSessionKey();
+        int SessionKeyLength { get; }
     }
 }

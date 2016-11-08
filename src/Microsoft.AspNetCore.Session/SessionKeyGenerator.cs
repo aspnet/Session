@@ -10,11 +10,13 @@ namespace Microsoft.AspNetCore.Session
     {
         private static readonly RandomNumberGenerator CryptoRandom = RandomNumberGenerator.Create();
 
-        public virtual string GetNewSessionKey(int sessionKeyLength)
+        public virtual string GetNewSessionKey()
         {
             var guidBytes = new byte[16];
             CryptoRandom.GetBytes(guidBytes);
             return new Guid(guidBytes).ToString();
         }
+
+        public int SessionKeyLength => 36; //"382c74c3-721d-4f34-80e5-57657b6cbc27"
     }
 }
