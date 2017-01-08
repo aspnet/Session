@@ -90,7 +90,11 @@ namespace Microsoft.AspNetCore.Session
             var isNewSessionKey = false;
             Func<bool> tryEstablishSession = ReturnTrue;
             var cookieValue = context.Request.Cookies[_options.CookieName];
-            var sessionKey = CookieProtection.Unprotect(_dataProtector, cookieValue, _logger);
+            var sessionKey = string.Empty;
+            if (!string.IsNullOrEmpty(cookieValue))
+            {
+                sessionKey = CookieProtection.Unprotect(_dataProtector, cookieValue, _logger);
+            }
             if (string.IsNullOrWhiteSpace(sessionKey) || sessionKey.Length != SessionKeyLength)
             {
                 // No valid cookie, new session.
