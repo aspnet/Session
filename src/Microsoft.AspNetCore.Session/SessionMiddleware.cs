@@ -81,7 +81,7 @@ namespace Microsoft.AspNetCore.Session
         /// <returns>A <see cref="Task"/> that completes when the middleware has completed processing.</returns>
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Method.Equals("head", StringComparison.OrdinalIgnoreCase))
+            if (_options.BypassHeadReqeust && context.Request.Method.Equals("head", StringComparison.OrdinalIgnoreCase))
             {
                 await _next(context);
                 return;
