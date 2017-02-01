@@ -15,9 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{94E8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionSample", "samples\SessionSample\SessionSample.csproj", "{FE0B9969-3BDE-4A7D-BE1B-47EAE8DBF365}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6CB0FEE3-129E-488A-801A-6DE479AEC416}"
-	ProjectSection(SolutionItems) = preProjectEndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
