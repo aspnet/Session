@@ -3,12 +3,12 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.2",
-    "Microsoft.AspNetCore.Session": "1.0.1",
-    "Microsoft.Extensions.Caching.Memory": "1.0.1",
-    "Microsoft.Extensions.Caching.SqlServer": "1.0.1",
-    "Microsoft.Extensions.Logging.Console": "1.0.1"
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.2",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.3",
+    "Microsoft.AspNetCore.Session": "1.0.2",
+    "Microsoft.Extensions.Caching.Memory": "1.0.2",
+    "Microsoft.Extensions.Caching.SqlServer": "1.0.2",
+    "Microsoft.Extensions.Logging.Console": "1.0.2"
   },
   "publishOptions": {
     "include": [
@@ -18,7 +18,7 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "Microsoft.Extensions.Caching.Redis": "1.0.1"
+        "Microsoft.Extensions.Caching.Redis": "1.0.2"
       }
     },
     "netcoreapp1.0": {
@@ -31,7 +31,7 @@
     }
   },
   "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-*"
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview4-update1"
   },
   "scripts": {
     "postpublish": "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
