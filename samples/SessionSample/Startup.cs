@@ -44,6 +44,9 @@ namespace SessionSample
         {
             app.UseSession();
 
+            bool isLoggedIn=false; 
+            var bf = new BooleanFormatter();
+
             app.Map("/session", subApp =>
             {
                 subApp.Run(async context =>
@@ -52,6 +55,7 @@ namespace SessionSample
                     visits = context.Session.GetInt32("visits") ?? 0;
                     context.Session.SetInt32("visits", ++visits);
                     await context.Response.WriteAsync("Counting: You have visited our page this many times: " + visits);
+                    context.Session.Set<bool>("IsLoggedIn",true,bf);
                 });
             });
 
@@ -71,6 +75,8 @@ namespace SessionSample
                     context.Session.SetInt32("visits", ++visits);
                     await context.Response.WriteAsync("Your session was located, you've visited the site this many times: " + visits);
                 }
+                isLoggedIn = context.Session.Get<bool>("IsLoggedIn",bf);
+                await context.Response.WriteAsync("<br>[Is Logged In: " + isLoggedIn + "]");
                 await context.Response.WriteAsync("</body></html>");
             });
         }
