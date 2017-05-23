@@ -46,5 +46,10 @@ namespace Microsoft.AspNetCore.Builder
         /// resets the timeout. Note this only applies to the content of the session, not the cookie.
         /// </summary>
         public TimeSpan IdleTimeout { get; set; } = TimeSpan.FromMinutes(20);
+
+        /// <summary>
+        /// Determines if session should be used for HTTP HEAD request
+        /// </summary>
+        public bool BypassHeadReqeust { get; set; }
     }
 }
