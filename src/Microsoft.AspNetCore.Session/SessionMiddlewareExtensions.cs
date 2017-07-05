@@ -46,5 +46,31 @@ namespace Microsoft.AspNetCore.Builder
 
             return app.UseMiddleware<SessionMiddleware>(Options.Create(options));
         }
+
+        /// <summary>
+        /// Adds the <see cref="SessionMiddleware"/> to automatically enable session state for the application.
+        /// </summary>
+        /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="options">The <see cref="SessionOptions"/>.</param>
+        /// <param name="keyGenerator">The <see cref="ISessionKeyGenerator"/> implementation.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        public static IApplicationBuilder UseSession(this IApplicationBuilder app, SessionOptions options,
+            ISessionKeyGenerator keyGenerator)
+        {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+            if (keyGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(keyGenerator));
+            }
+
+            return app.UseMiddleware<SessionMiddleware>(Options.Create(options), keyGenerator);
+        }
     }
 }
