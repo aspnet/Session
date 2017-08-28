@@ -291,7 +291,6 @@ namespace Microsoft.AspNetCore.Session
             var sink = new TestSink(
                 TestSink.EnableWithTypeName<DistributedSession>,
                 TestSink.EnableWithTypeName<DistributedSession>);
-
             var loggerFactory = new TestLoggerFactory(sink, enabled: true);
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -332,7 +331,6 @@ namespace Microsoft.AspNetCore.Session
             var sink = new TestSink(
                 TestSink.EnableWithTypeName<DistributedSession>,
                 TestSink.EnableWithTypeName<DistributedSession>);
-
             var loggerFactory = new TestLoggerFactory(sink, enabled: true);
             var builder = new WebHostBuilder()
                 .Configure(app =>
