@@ -31,3 +31,7 @@ project.lock.json
 .testPublish/
 launchSettings.json
 global.json
+
+korebuild-lock.txt
+*.g.targets
+
