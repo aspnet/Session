@@ -14,6 +14,7 @@ namespace Microsoft.Extensions.Logging
         private static Action<ILogger, string, string, int, Exception> _sessionStored;
         private static Action<ILogger, string, Exception> _sessionCacheReadException;
         private static Action<ILogger, Exception> _errorUnprotectingCookie;
+        private static Action<ILogger, Exception> _sessionCommitCanceled;
 
         static LoggingExtensions()
         {
@@ -23,7 +24,7 @@ namespace Microsoft.Extensions.Logging
                 formatString: "Error closing the session.");
             _accessingExpiredSession = LoggerMessage.Define<string>(
                 eventId: 2,
-                logLevel: LogLevel.Warning,
+                logLevel: LogLevel.Information,
                 formatString: "Accessing expired session, Key:{sessionKey}");
             _sessionStarted = LoggerMessage.Define<string, string>(
                 eventId: 3,
@@ -45,6 +46,10 @@ namespace Microsoft.Extensions.Logging
                 eventId: 7,
                 logLevel: LogLevel.Warning,
                 formatString: "Error unprotecting the session cookie.");
+            _sessionCommitCanceled = LoggerMessage.Define(
+                eventId: 10,
+                logLevel: LogLevel.Information,
+                formatString: "Committing the session was canceled.");
         }
 
         public static void ErrorClosingTheSession(this ILogger logger, Exception exception)
@@ -80,6 +85,11 @@ namespace Microsoft.Extensions.Logging
         public static void ErrorUnprotectingSessionCookie(this ILogger logger, Exception exception)
         {
             _errorUnprotectingCookie(logger, exception);
+        }
+
+        public static void SessionCommitCanceled(this ILogger logger)
+        {
+            _sessionCommitCanceled(logger, null);
         }
     }
 }

@@ -231,6 +231,8 @@ namespace Microsoft.AspNetCore.Session
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
+                        // This operation is only so we can log if the session already existed.
+                        // Log and ignore failures.
                         try
                         {
                             var data = await _cache.GetAsync(_sessionKey, cts.Token);
@@ -238,6 +240,9 @@ namespace Microsoft.AspNetCore.Session
                             {
                                 _logger.SessionStarted(_sessionKey, Id);
                             }
+                        }
+                        catch (OperationCanceledException)
+                        {
                         }
                         catch (Exception exception)
                         {

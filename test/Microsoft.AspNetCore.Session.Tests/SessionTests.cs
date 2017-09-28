@@ -331,7 +331,7 @@ namespace Microsoft.AspNetCore.Session
         }
 
         [Fact]
-        public async Task ExpiredSession_LogsWarning()
+        public async Task ExpiredSession_LogsInfo()
         {
             var sink = new TestSink(
                 TestSink.EnableWithTypeName<DistributedSession>,
@@ -388,7 +388,7 @@ namespace Microsoft.AspNetCore.Session
             Assert.Contains("expired", sessionLogMessages[2].State.ToString());
             Assert.Equal(LogLevel.Information, sessionLogMessages[0].LogLevel);
             Assert.Equal(LogLevel.Debug, sessionLogMessages[1].LogLevel);
-            Assert.Equal(LogLevel.Warning, sessionLogMessages[2].LogLevel);
+            Assert.Equal(LogLevel.Information, sessionLogMessages[2].LogLevel);
         }
 
         [Fact]
@@ -603,7 +603,90 @@ namespace Microsoft.AspNetCore.Session
         }
 
         [Fact]
-        public async Task SessionLogsCacheWriteException()
+        public async Task SessionLogsCacheLoadAsyncException()
+        {
+            var sink = new TestSink(
+                TestSink.EnableWithTypeName<DistributedSession>,
+                TestSink.EnableWithTypeName<DistributedSession>);
+            var loggerFactory = new TestLoggerFactory(sink, enabled: true);
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseSession();
+                    app.Run(async context =>
+                    {
+                        await Assert.ThrowsAsync<InvalidOperationException>(() => context.Session.LoadAsync());
+                        Assert.False(context.Session.IsAvailable);
+                        Assert.Equal(string.Empty, context.Session.Id);
+                        Assert.False(context.Session.Keys.Any());
+                    });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(typeof(ILoggerFactory), loggerFactory);
+                    services.AddSingleton<IDistributedCache>(new UnreliableCache(new MemoryCache(new MemoryCacheOptions()))
+                    {
+                        DisableGet = true
+                    });
+                    services.AddSession();
+                });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+            }
+
+            var sessionLogMessages = sink.Writes;
+
+            Assert.Single(sessionLogMessages);
+            Assert.Contains("Session cache read exception", sessionLogMessages[0].State.ToString());
+            Assert.Equal(LogLevel.Error, sessionLogMessages[0].LogLevel);
+        }
+
+        [Fact]
+        public async Task SessionLoadAsyncCanceledException()
+        {
+            var sink = new TestSink(
+                TestSink.EnableWithTypeName<DistributedSession>,
+                TestSink.EnableWithTypeName<DistributedSession>);
+            var loggerFactory = new TestLoggerFactory(sink, enabled: true);
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseSession();
+                    app.Run(async context =>
+                    {
+                        var cts = new CancellationTokenSource();
+                        var token = cts.Token;
+                        cts.Cancel();
+                        await Assert.ThrowsAsync<OperationCanceledException>(() => context.Session.LoadAsync(token));
+                    });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(typeof(ILoggerFactory), loggerFactory);
+                    services.AddSingleton<IDistributedCache>(new UnreliableCache(new MemoryCache(new MemoryCacheOptions()))
+                    {
+                        DelayGetAsync = true
+                    });
+                    services.AddSession();
+                });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+            }
+
+            var sessionLogMessages = sink.Writes;
+            Assert.Empty(sessionLogMessages);
+        }
+
+        [Fact]
+        public async Task SessionLogsCacheCommitException()
         {
             var sink = new TestSink(
                 writeContext =>
@@ -653,6 +736,116 @@ namespace Microsoft.AspNetCore.Session
 
             Assert.Contains("Error closing the session.", sessionMiddlewareLogMessage.State.ToString());
             Assert.Equal(LogLevel.Error, sessionMiddlewareLogMessage.LogLevel);
+        }
+
+        [Fact]
+        public async Task SessionLogsCacheCommitTimeoutException()
+        {
+            var sink = new TestSink(
+                writeContext =>
+                {
+                    return writeContext.LoggerName.Equals(typeof(SessionMiddleware).FullName)
+                        || writeContext.LoggerName.Equals(typeof(DistributedSession).FullName);
+                },
+                beginScopeContext =>
+                {
+                    return beginScopeContext.LoggerName.Equals(typeof(SessionMiddleware).FullName)
+                        || beginScopeContext.LoggerName.Equals(typeof(DistributedSession).FullName);
+                });
+            var loggerFactory = new TestLoggerFactory(sink, enabled: true);
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseSession(new SessionOptions()
+                    {
+                        IOTimeout = TimeSpan.FromSeconds(0.5)
+                    });
+                    app.Run(context =>
+                    {
+                        context.Session.SetInt32("key", 0);
+                        return Task.FromResult(0);
+                    });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(typeof(ILoggerFactory), loggerFactory);
+                    services.AddSingleton<IDistributedCache>(new UnreliableCache(new MemoryCache(new MemoryCacheOptions()))
+                    {
+                        DelaySetAsync = true
+                    });
+                    services.AddSession();
+                });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+            }
+
+            var sessionLogMessages = sink.Writes.Where(message => message.LoggerName.Equals(typeof(DistributedSession).FullName, StringComparison.Ordinal)).ToList();
+
+            Assert.Contains("Session started", sessionLogMessages[0].State.ToString());
+            Assert.Equal(LogLevel.Information, sessionLogMessages[0].LogLevel);
+
+            var sessionMiddlewareLogs = sink.Writes.Where(message => message.LoggerName.Equals(typeof(SessionMiddleware).FullName, StringComparison.Ordinal)).ToList();
+
+            Assert.Contains("Committing the session was canceled.", sessionMiddlewareLogs[0].State.ToString());
+            Assert.Equal(LogLevel.Information, sessionMiddlewareLogs[0].LogLevel);
+        }
+
+        [Fact]
+        public async Task SessionLogsCacheCommitCanceledException()
+        {
+            var sink = new TestSink(
+                writeContext =>
+                {
+                    return writeContext.LoggerName.Equals(typeof(SessionMiddleware).FullName)
+                        || writeContext.LoggerName.Equals(typeof(DistributedSession).FullName);
+                },
+                beginScopeContext =>
+                {
+                    return beginScopeContext.LoggerName.Equals(typeof(SessionMiddleware).FullName)
+                        || beginScopeContext.LoggerName.Equals(typeof(DistributedSession).FullName);
+                });
+            var loggerFactory = new TestLoggerFactory(sink, enabled: true);
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseSession();
+                    app.Run(async context =>
+                    {
+                        context.Session.SetInt32("key", 0);
+                        var cts = new CancellationTokenSource();
+                        var token = cts.Token;
+                        cts.Cancel();
+                        await Assert.ThrowsAsync<OperationCanceledException>(() => context.Session.CommitAsync(token));
+                        context.RequestAborted = token;
+                    });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(typeof(ILoggerFactory), loggerFactory);
+                    services.AddSingleton<IDistributedCache>(new UnreliableCache(new MemoryCache(new MemoryCacheOptions()))
+                    {
+                        DelaySetAsync = true
+                    });
+                    services.AddSession();
+                });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync(string.Empty);
+                response.EnsureSuccessStatusCode();
+            }
+
+            Assert.Empty(sink.Writes.Where(message => message.LoggerName.Equals(typeof(DistributedSession).FullName, StringComparison.Ordinal)));
+
+            var sessionMiddlewareLogs = sink.Writes.Where(message => message.LoggerName.Equals(typeof(SessionMiddleware).FullName, StringComparison.Ordinal)).ToList();
+
+            Assert.Contains("Committing the session was canceled.", sessionMiddlewareLogs[0].State.ToString());
+            Assert.Equal(LogLevel.Information, sessionMiddlewareLogs[0].LogLevel);
         }
 
         [Fact]
@@ -718,6 +911,9 @@ namespace Microsoft.AspNetCore.Session
             public bool DisableGet { get; set; }
             public bool DisableSetAsync { get; set; }
             public bool DisableRefreshAsync { get; set; }
+            public bool DelayGetAsync { get; set; }
+            public bool DelaySetAsync { get; set; }
+            public bool DelayRefreshAsync { get; set; }
 
             public UnreliableCache(IMemoryCache memoryCache)
             {
@@ -732,24 +928,53 @@ namespace Microsoft.AspNetCore.Session
                 }
                 return _cache.Get(key);
             }
-            public Task<byte[]> GetAsync(string key, CancellationToken token = default(CancellationToken)) => _cache.GetAsync(key);
+
+            public Task<byte[]> GetAsync(string key, CancellationToken token = default(CancellationToken))
+            {
+                if (DisableGet)
+                {
+                    throw new InvalidOperationException();
+                }
+                if (DelayGetAsync)
+                {
+                    token.WaitHandle.WaitOne(TimeSpan.FromSeconds(10));
+                    token.ThrowIfCancellationRequested();
+                }
+                return _cache.GetAsync(key, token);
+            }
+
             public void Refresh(string key) => _cache.Refresh(key);
+
             public Task RefreshAsync(string key, CancellationToken token = default(CancellationToken))
             {
                 if (DisableRefreshAsync)
                 {
                     throw new InvalidOperationException();
                 }
+                if (DelayRefreshAsync)
+                {
+                    token.WaitHandle.WaitOne(TimeSpan.FromSeconds(10));
+                    token.ThrowIfCancellationRequested();
+                }
                 return _cache.RefreshAsync(key);
             }
+
             public void Remove(string key) => _cache.Remove(key);
+
             public Task RemoveAsync(string key, CancellationToken token = default(CancellationToken)) => _cache.RemoveAsync(key);
+
             public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => _cache.Set(key, value, options);
+
             public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default(CancellationToken))
             {
                 if (DisableSetAsync)
                 {
                     throw new InvalidOperationException();
+                }
+                if (DelaySetAsync)
+                {
+                    token.WaitHandle.WaitOne(TimeSpan.FromSeconds(10));
+                    token.ThrowIfCancellationRequested();
                 }
                 return  _cache.SetAsync(key, value, options);
             }
