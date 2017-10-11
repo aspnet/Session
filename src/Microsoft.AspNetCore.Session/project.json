@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "ASP.NET Core session state middleware.",
   "packOptions": {
     "repository": {
@@ -13,8 +13,8 @@
     ]
   },
   "dependencies": {
-    "Microsoft.AspNetCore.DataProtection": "1.0.4",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.3",
+    "Microsoft.AspNetCore.DataProtection": "1.0.5",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.4",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.2",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.2",
     "Microsoft.Extensions.Options": "1.0.2"
