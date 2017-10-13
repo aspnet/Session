@@ -32,6 +32,5 @@ project.lock.json
 launchSettings.json
 global.json
 
-korebuild-lock.txt
 *.g.targets
 
