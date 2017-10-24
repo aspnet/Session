@@ -71,6 +71,7 @@ namespace Microsoft.AspNetCore.Session
             _ioTimeout = ioTimeout;
             _tryEstablishSession = tryEstablishSession;
             _logger = loggerFactory.CreateLogger<DistributedSession>();
+            _store = new Dictionary<EncodedKey, byte[]>();
             _isNewSessionKey = isNewSessionKey;
         }
 
