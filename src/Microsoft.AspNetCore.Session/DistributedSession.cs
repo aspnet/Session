@@ -70,7 +70,6 @@ namespace Microsoft.AspNetCore.Session
             _idleTimeout = idleTimeout;
             _ioTimeout = ioTimeout;
             _tryEstablishSession = tryEstablishSession;
-            _store = new Dictionary<EncodedKey, byte[]>();
             _logger = loggerFactory.CreateLogger<DistributedSession>();
             _isNewSessionKey = isNewSessionKey;
         }
@@ -340,6 +339,7 @@ namespace Microsoft.AspNetCore.Session
             }
 
             int expectedEntries = DeserializeNumFrom3Bytes(content);
+            _store = new Dictionary<EncodedKey, byte[]>(expectedEntries);
             _sessionIdBytes = ReadBytes(content, IdByteCount);
 
             for (int i = 0; i < expectedEntries; i++)
