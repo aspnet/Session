@@ -71,7 +71,6 @@ namespace Microsoft.AspNetCore.Session
             _ioTimeout = ioTimeout;
             _tryEstablishSession = tryEstablishSession;
             _logger = loggerFactory.CreateLogger<DistributedSession>();
-            _store = new Dictionary<EncodedKey, byte[]>();
             _isNewSessionKey = isNewSessionKey;
         }
 
@@ -178,6 +177,7 @@ namespace Microsoft.AspNetCore.Session
                     }
                     else if (!_isNewSessionKey)
                     {
+                        _store = new Dictionary<EncodedKey, byte[]>();
                         _logger.AccessingExpiredSession(_sessionKey);
                     }
                     _isAvailable = true;
