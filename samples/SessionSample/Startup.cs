@@ -32,14 +32,16 @@ namespace SessionSample
         public void ConfigureServices(IServiceCollection services)
         {
             // Uncomment the following line to use the in-memory implementation of IDistributedCache
-            //services.AddDistributedMemoryCache();
-
-            services.AddDistributedSqlServerCache(o =>
-            {
-                o.ConnectionString = Configuration["AppSettings:ConnectionString"];
-                o.SchemaName = "dbo";
-                o.TableName = "Sessions";
-            });
+            services.AddDistributedMemoryCache();
+            
+            // Uncomment the following line to use the Microsoft SQL Server implementation of IDistributedCache.
+            // Note that this would require setting up the session state database.
+            //services.AddDistributedSqlServerCache(o =>
+            //{
+            //    o.ConnectionString = Configuration["AppSettings:ConnectionString"];
+            //    o.SchemaName = "dbo";
+            //    o.TableName = "Sessions";
+            //});
 
             // Uncomment the following line to use the Redis implementation of IDistributedCache.
             // This will override any previously registered IDistributedCache service.
